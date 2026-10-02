@@ -29,7 +29,7 @@ body{margin:0;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-a
   --ellie:#B83A66; --ellie-wash:#F8E3EA;
   --frey:#B07A0C; --frey-wash:#FBF0D6;
   --danger:#B3261E;
-  --busy:#C62828; --maybe:#D9A400; --free:#2E8B57; --fun:#2F7FD8;
+  --busy:#C62828; --maybe:#D9A400; --free:#2E8B57; --hatch:#C9D0C8;
   --display:"Gabarito", "Avenir Next", "Segoe UI", system-ui, sans-serif;
   --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
   --r:10px;
@@ -40,7 +40,7 @@ body{margin:0;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-a
   --luke:#8FB0F5; --luke-wash:#1F2A44;
   --ellie:#F08DB0; --ellie-wash:#3A1F2A;
   --frey:#E9BC5A; --frey-wash:#3A2F17;
-  --danger:#FF8A80; --busy:#FF6B6B; --maybe:#F2C94C; --free:#5DD39E; --fun:#7DB8FF; color-scheme:dark;
+  --danger:#FF8A80; --busy:#FF6B6B; --maybe:#F2C94C; --free:#5DD39E; --hatch:#3D4642; color-scheme:dark;
 }}
 :root[data-theme="dark"]{
   --paper:#151917; --sheet:#1D2220; --ink:#E9EDEA; --muted:#98A29C; --rule:#2E3532; --soft:#252B28;
@@ -48,7 +48,7 @@ body{margin:0;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-a
   --luke:#8FB0F5; --luke-wash:#1F2A44;
   --ellie:#F08DB0; --ellie-wash:#3A1F2A;
   --frey:#E9BC5A; --frey-wash:#3A2F17;
-  --danger:#FF8A80; --busy:#FF6B6B; --maybe:#F2C94C; --free:#5DD39E; --fun:#7DB8FF; color-scheme:dark;
+  --danger:#FF8A80; --busy:#FF6B6B; --maybe:#F2C94C; --free:#5DD39E; --hatch:#3D4642; color-scheme:dark;
 }
 *{box-sizing:border-box}
 body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.4}
@@ -78,15 +78,16 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--today);outline-
 .date .num{font-family:var(--display);font-weight:700;font-size:1.5rem;line-height:1.1;font-variant-numeric:tabular-nums}
 .day.today .dow,.day.today .num{color:var(--today)}
 .slot{min-width:0;display:flex;flex-direction:column;gap:4px;background:var(--soft);border-radius:8px;padding:4px;min-height:58px;border:2px solid transparent}
-.slot.busy{border-color:var(--busy)}.slot.maybe{border-color:var(--maybe)}.slot.free{border-color:var(--free)}.slot.fun{border-color:var(--fun)}
-.ev .tag{display:inline-block;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--fun);margin-left:4px}
+.slot.duty{border-color:var(--busy)}.slot.maybe{border-color:var(--maybe)}.slot.indep{border-color:var(--free)}
+.slot.booked,.legend i.hatch{background:repeating-linear-gradient(135deg,var(--soft) 0 5px,var(--hatch) 5px 8px)}
+.ev .tag{display:inline-block;font-size:.68rem;font-weight:700;color:var(--free);margin-left:4px}
 .ev .meta{display:block;font-size:.74rem;line-height:1.2}
 .tally{flex-basis:100%;font-variant-numeric:tabular-nums}
 .ev.dim{opacity:.4}
 .ev .time{font-weight:700;font-size:.74rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.78rem;color:var(--muted)}
 .legend span{display:inline-flex;align-items:center;gap:5px}
-.legend i{width:12px;height:12px;border-radius:3px;border:2px solid var(--c)}
+.legend i{width:14px;height:14px;border-radius:3px;border:2px solid var(--c,var(--rule));background:var(--soft)}
 .ev{all:unset;box-sizing:border-box;cursor:pointer;display:block;background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:4px 6px;font-size:.82rem;line-height:1.25;overflow-wrap:anywhere}
 .ev:focus-visible{outline:2px solid var(--today)}
 .ev .who{display:flex;gap:3px;margin-top:3px}
@@ -107,6 +108,9 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--today);outline-
 .field input{font:inherit;font-size:16px;padding:10px 12px;border-radius:8px;border:1.5px solid var(--rule);background:var(--paper);color:var(--ink)}
 .people{display:flex;gap:8px;flex-wrap:wrap}
 .people .chip{padding:9px 14px;font-size:.95rem}
+.check{display:flex;align-items:center;gap:8px;font-weight:700;flex-wrap:wrap}
+.check input{width:20px;height:20px;accent-color:var(--free);margin:0}
+.check small{flex-basis:100%;font-weight:400;color:var(--muted);padding-left:28px}
 .err{color:var(--danger);font-size:.85rem;min-height:1.1em}
 .actions{display:flex;gap:8px;align-items:center}
 .btn{border:0;border-radius:999px;padding:10px 18px;font-weight:700}
@@ -140,7 +144,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--today);outline-
       <button class="navbtn" id="next" aria-label="Next week">›</button>
     </div>
     <div class="filters" id="filters" role="group" aria-label="Show events for"></div>
-    <div class="legend" id="legend" hidden><span><i style="--c:var(--busy)"></i>Busy</span><span><i style="--c:var(--maybe)"></i>Maybe free</span><span><i style="--c:var(--free)"></i>Free</span><span><i style="--c:var(--fun)"></i>Fun</span><span class="tally" id="tally"></span></div>
+    <div class="legend" id="legend" hidden><span><i class="hatch"></i>Booked</span><span><i></i>Not booked</span><span><i style="--c:var(--free)"></i>Independent</span><span><i style="--c:var(--busy)"></i>Not independent</span><span><i style="--c:var(--maybe)"></i>Nobody booked</span><span class="tally" id="tally"></span></div>
     <div class="banner" id="banner" hidden></div>
     <div class="cols" aria-hidden="true"><span></span><span>Morning</span><span>Afternoon</span><span>Evening</span></div>
   </header>
@@ -160,10 +164,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--today);outline-
       <label for="evTime">Time (optional)</label>
       <input id="evTime" maxlength="20" placeholder="e.g. 10.30" inputmode="text">
     </div>
-    <div class="field">
-      <span class="lbl">Type</span>
-      <div class="people" id="typePick" role="group" aria-label="Event type"></div>
-    </div>
+    <label class="check" for="evIndep"><input type="checkbox" id="evIndep"> Independent <small>time for yourself, not work or family jobs</small></label>
     <div class="field">
       <span class="lbl">Who</span>
       <div class="people" id="peoplePick"></div>
@@ -228,21 +229,22 @@ function renderFilters(){
   PEOPLE.forEach(p=>mk(p.name,p.name,p));
 }
 
-// What a slot means for one parent.
-// busy  = they're booked on something that isn't fun, or the other parent is out without Frey (so they have Frey)
-// fun   = they're booked, and everything they're booked on is fun
-// free  = Frey is accounted for elsewhere (with the other parent, or booked on his own, e.g. nursery)
-// maybe = nobody is booked, so it's open who looks after Frey
+// What a slot means for one parent: a fill and a border.
+// Fill:   booked (hatched) = they have an event, or the other parent is out without Frey (so they have Frey)
+//         clear            = they're not tied up
+// Border: indep (green) = everything they're booked on is Independent, or they're simply free
+//         duty  (red)   = work/jobs, or covering Frey
+//         maybe (yellow)= nobody is booked at all
 const PARENTS = {Luke:"Ellie", Ellie:"Luke"};
-const isFun = e => e.type === "fun";
+const isIndep = e => e.independent === true || e.type === "fun";   // "fun" = earlier name
 function availability(person, list){
   const has = n => list.some(e => e.people.includes(n));
+  if (!list.length) return {booked:false, tone:"maybe"};
   const own = list.filter(e => e.people.includes(person));
-  if (own.length) return own.every(isFun) ? "fun" : "busy";
-  if (!list.length) return "maybe";
-  const freyCovered = has("Frey");
-  if (has(PARENTS[person]) && !freyCovered) return "busy";
-  return "free";
+  const coveringFrey = has(PARENTS[person]) && !has("Frey");
+  if (own.length) return {booked:true, tone: own.every(isIndep) && !coveringFrey ? "indep" : "duty"};
+  if (coveringFrey) return {booked:true, tone:"duty"};
+  return {booked:false, tone:"indep"};
 }
 
 function render(){
@@ -252,7 +254,7 @@ function render(){
   const t = document.getElementById("weekTitle");
   t.firstChild.nodeValue = diff===0?"This week":diff===1?"Next week":diff===-1?"Last week":"Week of "+weekStart.getDate()+" "+MONTHS[weekStart.getMonth()];
   document.getElementById("legend").hidden = !PARENTS[filter];
-  const funSlots = {Luke:0, Ellie:0};
+  const indepSlots = {Luke:0, Ellie:0};
   document.getElementById("weekRange").textContent =
     `${weekStart.getDate()} ${MONTHS[weekStart.getMonth()]} – ${end.getDate()} ${MONTHS[end.getMonth()]} ${end.getFullYear()}`;
 
@@ -274,17 +276,17 @@ function render(){
       const mine=filter?all.filter(e=>e.people.includes(filter)):all;
       shown+=mine.length;
       if(PARENTS[filter]){
-        const st=availability(filter,all); cell.classList.add(st);
-        cell.setAttribute("aria-label",`${label}: ${filter} ${{busy:"busy",free:"free",maybe:"maybe free",fun:"doing something fun"}[st]}`);
+        const st=availability(filter,all); cell.classList.add(st.tone); if(st.booked) cell.classList.add("booked");
+        cell.setAttribute("aria-label",`${label}: ${filter} ${st.tone==="maybe"?"nobody booked":(st.booked?"booked":"not booked")+", "+(st.tone==="indep"?"independent":"not independent")}`);
       }
-      for(const n in funSlots) if(all.some(e=>isFun(e)&&e.people.includes(n))) funSlots[n]++;
+      for(const n in indepSlots) if(all.some(e=>isIndep(e)&&e.people.includes(n))) indepSlots[n]++;
       for(const e of all){
         const b=document.createElement("button");b.className="ev"+(filter&&!e.people.includes(filter)?" dim":"");b.type="button";
-        b.setAttribute("aria-label",`${e.time?e.time+" ":""}${e.title}${isFun(e)?" (fun)":""}, ${label}, ${e.people.join(", ")}. Edit`);
-        if(e.time||isFun(e)){
+        b.setAttribute("aria-label",`${e.time?e.time+" ":""}${e.title}${isIndep(e)?" (independent)":""}, ${label}, ${e.people.join(", ")}. Edit`);
+        if(e.time||isIndep(e)){
           const meta=document.createElement("span");meta.className="meta";
           if(e.time){const tm=document.createElement("span");tm.className="time";tm.textContent=e.time;meta.append(tm)}
-          if(isFun(e)){const tg=document.createElement("span");tg.className="tag";tg.textContent="Fun";if(!e.time)tg.style.marginLeft="0";meta.append(tg)}
+          if(isIndep(e)){const tg=document.createElement("span");tg.className="tag";tg.textContent="Independent";if(!e.time)tg.style.marginLeft="0";meta.append(tg)}
           b.append(meta);
         }
         const tt=document.createElement("span");tt.textContent=e.title;b.append(tt);
@@ -305,7 +307,7 @@ function render(){
     host.append(row);
   }
   document.getElementById("tally").textContent =
-    `Fun slots this week: Luke ${funSlots.Luke} · Ellie ${funSlots.Ellie}`;
+    `Independent slots this week: Luke ${indepSlots.Luke} · Ellie ${indepSlots.Ellie}`;
   const hint=document.getElementById("hint");
   hint.textContent = filter && shown===0 ? `Nothing for ${filter} this week.` : (events.size===0 && canWrite ? "Tap + in a slot to add something." : "");
   hint.hidden = !hint.textContent;
@@ -313,20 +315,8 @@ function render(){
 
 /* ---- Sheet ---- */
 const scrim=document.getElementById("scrim"), form=document.getElementById("sheet");
-const titleIn=document.getElementById("evTitle"), timeIn=document.getElementById("evTime"), errEl=document.getElementById("err"), delBtn=document.getElementById("delBtn");
+const titleIn=document.getElementById("evTitle"), timeIn=document.getElementById("evTime"), indepIn=document.getElementById("evIndep"), errEl=document.getElementById("err"), delBtn=document.getElementById("delBtn");
 
-let pickType = "work";
-function renderType(){
-  const h=document.getElementById("typePick");h.textContent="";
-  for(const [val,label,c,w] of [["work","Work / jobs","--muted","--soft"],["fun","Fun","--fun","--luke-wash"]]){
-    const b=document.createElement("button");b.type="button";b.className="chip";
-    b.style.setProperty("--c",`var(${c})`);b.style.setProperty("--w",`var(${w})`);
-    b.setAttribute("aria-pressed",String(pickType===val));
-    b.append(label);
-    b.onclick=()=>{pickType=val;renderType()};
-    h.append(b);
-  }
-}
 function renderPick(){
   const h=document.getElementById("peoplePick");h.textContent="";
   for(const p of PEOPLE){
@@ -343,14 +333,14 @@ function openSheet(ctx){
   const e = ctx.id ? events.get(ctx.id) : null;
   titleIn.value = e ? e.title : "";
   timeIn.value = e && e.time ? e.time : "";
-  pickType = e && e.type === "fun" ? "fun" : "work";
+  indepIn.checked = !!(e && isIndep(e));
   pick = new Set(e ? e.people : (ctx.preset ? [ctx.preset] : []));
   const [y,m,d]=ctx.date.split("-").map(Number); const dt=new Date(y,m-1,d);
   document.getElementById("sheetTitle").firstChild.nodeValue = e ? "Edit event" : "Add event";
   document.getElementById("sheetWhen").textContent = `${DOW[(dt.getDay()+6)%7]} ${d} ${MONTHS[m-1]} · ${SLOTS.find(s=>s[0]===ctx.slot)[1]}`;
   delBtn.hidden = !e || !canWrite; delBtn.classList.remove("armed"); delBtn.textContent="Delete";
-  titleIn.disabled = !canWrite; timeIn.disabled = !canWrite; document.getElementById("saveBtn").hidden = !canWrite;
-  renderPick(); renderType();
+  titleIn.disabled = !canWrite; timeIn.disabled = !canWrite; indepIn.disabled = !canWrite; document.getElementById("saveBtn").hidden = !canWrite;
+  renderPick();
   scrim.hidden=false;
   setTimeout(()=>titleIn.focus(),50);
 }
@@ -372,7 +362,7 @@ form.addEventListener("submit",async ev=>{
   const people=PEOPLE.map(p=>p.name).filter(n=>pick.has(n));
   const body={date,slot,title,people,created:id?(events.get(id).created||Date.now()):Date.now()};
   const time=timeIn.value.trim(); if(time) body.time=time;
-  if(pickType==="fun") body.type="fun";
+  if(indepIn.checked) body.independent=true;
   const save=document.getElementById("saveBtn");save.disabled=true;
   try{
     await store.save(id, body);

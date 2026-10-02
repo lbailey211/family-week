@@ -11,7 +11,7 @@ service cloud.firestore {
 
     function isValidEvent() {
       let e = request.resource.data;
-      return e.keys().hasOnly(['date', 'slot', 'title', 'people', 'created', 'time', 'type'])
+      return e.keys().hasOnly(['date', 'slot', 'title', 'people', 'created', 'time', 'type', 'independent'])
         && e.date is string && e.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
         && e.slot in ['morning', 'afternoon', 'evening']
         && e.title is string && e.title.size() > 0 && e.title.size() <= 80
@@ -19,7 +19,8 @@ service cloud.firestore {
         && e.people.hasOnly(['Luke', 'Ellie', 'Frey'])
         && e.created is number
         && (!('time' in e) || (e.time is string && e.time.size() <= 20))
-        && (!('type' in e) || e.type in ['work', 'fun']);
+        && (!('type' in e) || e.type in ['work', 'fun'])
+        && (!('independent' in e) || e.independent is bool);
     }
 
     match /events/{eventId} {
