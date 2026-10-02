@@ -2,11 +2,11 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // The only Google accounts allowed in. Add Ellie's address here (and in index.html).
+    // The only Google accounts allowed in. Keep this list the same as ALLOWED in index.html.
     function isFamily() {
       return request.auth != null
         && request.auth.token.email_verified == true
-        && request.auth.token.email in ['lbailey211@gmail.com'];
+        && request.auth.token.email in ['lbailey211@gmail.com', 'ektwoodward@gmail.com'];
     }
 
     function isValidEvent() {
