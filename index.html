@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Family Week</title>
+<meta name="theme-color" content="#F5F6F2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151917" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Family Week">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gabarito:wght@500;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+html{-webkit-text-size-adjust:100%}
+body{margin:0;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+
+/* Layout: kitchen-wall planner — days run down the page, Morning / Afternoon / Evening run across, like a printed week-to-view pad. */
+:root{
+  --paper:#F5F6F2; --sheet:#FFFFFF; --ink:#1D2320; --muted:#68716C; --rule:#DFE3DD; --soft:#EDF0EB;
+  --today:#1F5F4F; --today-wash:#E3EFEA;
+  --luke:#2F5FC4; --luke-wash:#E4EBFA;
+  --ellie:#B83A66; --ellie-wash:#F8E3EA;
+  --frey:#B07A0C; --frey-wash:#FBF0D6;
+  --danger:#B3261E;
+  --display:"Gabarito", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#151917; --sheet:#1D2220; --ink:#E9EDEA; --muted:#98A29C; --rule:#2E3532; --soft:#252B28;
+  --today:#7CC9B0; --today-wash:#1E332C;
+  --luke:#8FB0F5; --luke-wash:#1F2A44;
+  --ellie:#F08DB0; --ellie-wash:#3A1F2A;
+  --frey:#E9BC5A; --frey-wash:#3A2F17;
+  --danger:#FF8A80; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#151917; --sheet:#1D2220; --ink:#E9EDEA; --muted:#98A29C; --rule:#2E3532; --soft:#252B28;
+  --today:#7CC9B0; --today-wash:#1E332C;
+  --luke:#8FB0F5; --luke-wash:#1F2A44;
+  --ellie:#F08DB0; --ellie-wash:#3A1F2A;
+  --frey:#E9BC5A; --frey-wash:#3A2F17;
+  --danger:#FF8A80; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.4}
+.wrap{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:12px 40px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--today);outline-offset:2px}
+
+/* Top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);padding-block:8px 6px;display:grid;gap:10px}
+.weekline{display:flex;align-items:center;gap:8px}
+.weekline h1{font-family:var(--display);font-weight:800;font-size:1.35rem;letter-spacing:-.01em;margin:0;flex:1;min-width:0;text-wrap:balance}
+.weekline h1 small{display:block;font-family:var(--body);font-weight:400;font-size:.8rem;color:var(--muted);letter-spacing:0}
+.navbtn{border:1px solid var(--rule);background:var(--sheet);border-radius:999px;height:38px;min-width:38px;padding:0 12px;font-weight:700}
+.navbtn[aria-label]{font-size:1.1rem;padding:0}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1.5px solid var(--rule);background:var(--sheet);border-radius:999px;padding:6px 12px;font-weight:700;font-size:.88rem;display:inline-flex;align-items:center;gap:6px}
+.chip .dot{width:9px;height:9px;border-radius:50%;background:var(--c,var(--muted))}
+.chip[aria-pressed="true"]{border-color:var(--c,var(--ink));background:var(--w,var(--soft))}
+.cols{display:grid;grid-template-columns:52px repeat(3,minmax(0,1fr));gap:6px;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;padding-inline:2px}
+
+/* Days */
+.days{display:grid;gap:8px;margin-top:4px}
+.day{display:grid;grid-template-columns:52px repeat(3,minmax(0,1fr));gap:6px;background:var(--sheet);border:1px solid var(--rule);border-radius:var(--r);padding:8px 6px}
+.day.today{border-color:var(--today);box-shadow:inset 3px 0 0 var(--today)}
+.date{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:2px}
+.date .dow{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.date .num{font-family:var(--display);font-weight:700;font-size:1.5rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.day.today .dow,.day.today .num{color:var(--today)}
+.slot{min-width:0;display:flex;flex-direction:column;gap:4px;background:var(--soft);border-radius:8px;padding:4px;min-height:58px}
+.ev{all:unset;box-sizing:border-box;cursor:pointer;display:block;background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:4px 6px;font-size:.82rem;line-height:1.25;overflow-wrap:anywhere}
+.ev:focus-visible{outline:2px solid var(--today)}
+.ev .who{display:flex;gap:3px;margin-top:3px}
+.ev .who span{width:16px;height:16px;border-radius:50%;font-size:.6rem;font-weight:700;display:grid;place-items:center;color:var(--sheet);background:var(--c)}
+.add{border:1px dashed var(--rule);background:transparent;border-radius:6px;color:var(--muted);font-size:1rem;line-height:1;padding:4px 0;margin-top:auto}
+.add:hover{color:var(--ink);border-color:var(--muted)}
+.hint{color:var(--muted);font-size:.85rem;text-align:center;margin-top:14px}
+.banner{background:var(--frey-wash);color:var(--ink);border-radius:8px;padding:8px 12px;font-size:.88rem}
+
+/* Sheet */
+.scrim{position:fixed;inset:0;background:rgba(10,14,12,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--sheet);color:var(--ink);width:100%;max-width:520px;border-radius:16px 16px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));display:grid;gap:14px}
+@media (min-width:600px){.scrim{align-items:center}.sheet{border-radius:16px}}
+.sheet h2{font-family:var(--display);font-size:1.15rem;margin:0}
+.sheet h2 small{display:block;font-family:var(--body);font-weight:400;font-size:.85rem;color:var(--muted)}
+.field{display:grid;gap:6px}
+.field label,.field .lbl{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.field input{font:inherit;font-size:16px;padding:10px 12px;border-radius:8px;border:1.5px solid var(--rule);background:var(--paper);color:var(--ink)}
+.people{display:flex;gap:8px;flex-wrap:wrap}
+.people .chip{padding:9px 14px;font-size:.95rem}
+.err{color:var(--danger);font-size:.85rem;min-height:1.1em}
+.actions{display:flex;gap:8px;align-items:center}
+.btn{border:0;border-radius:999px;padding:10px 18px;font-weight:700}
+.btn.primary{background:var(--today);color:var(--sheet)}
+.btn.ghost{background:transparent;border:1px solid var(--rule)}
+.btn.del{background:transparent;color:var(--danger);margin-right:auto;padding-left:4px}
+.btn.del.armed{background:var(--danger);color:var(--sheet);padding-left:18px}
+.btn:disabled{opacity:.5;cursor:default}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:up .18s ease-out}@keyframes up{from{transform:translateY(16px);opacity:.6}}}
+
+/* Sign-in gate */
+.gate{position:fixed;inset:0;z-index:30;background:var(--paper);display:grid;place-items:center;padding:24px 16px}
+.gate .card{max-width:340px;width:100%;display:grid;gap:14px;text-align:center}
+.gate h2{font-family:var(--display);font-weight:800;font-size:1.6rem;margin:0}
+.gate p{margin:0;color:var(--muted)}
+.gate .who-dots{display:flex;justify-content:center;gap:6px}
+.gate .who-dots span{width:14px;height:14px;border-radius:50%;background:var(--c)}
+.foot{display:flex;justify-content:center;gap:8px;color:var(--muted);font-size:.8rem;margin-top:18px}
+.linkbtn{background:none;border:0;padding:0;color:var(--muted);text-decoration:underline}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="top">
+    <div class="weekline">
+      <button class="navbtn" id="prev" aria-label="Previous week">‹</button>
+      <h1 id="weekTitle">This week<small id="weekRange"></small></h1>
+      <button class="navbtn" id="todayBtn">Today</button>
+      <button class="navbtn" id="next" aria-label="Next week">›</button>
+    </div>
+    <div class="filters" id="filters" role="group" aria-label="Show events for"></div>
+    <div class="banner" id="banner" hidden></div>
+    <div class="cols" aria-hidden="true"><span></span><span>Morning</span><span>Afternoon</span><span>Evening</span></div>
+  </header>
+  <main class="days" id="days"></main>
+  <p class="hint" id="hint">Tap + in a slot to add something.</p>
+  <p class="foot"><span id="signedAs"></span><button class="linkbtn" id="signOutBtn" type="button">Sign out</button></p>
+</div>
+
+<div class="scrim" id="scrim" hidden>
+  <form class="sheet" id="sheet" autocomplete="off">
+    <h2 id="sheetTitle">Add event<small id="sheetWhen"></small></h2>
+    <div class="field">
+      <label for="evTitle">What</label>
+      <input id="evTitle" maxlength="80" placeholder="e.g. Nursery pickup">
+    </div>
+    <div class="field">
+      <span class="lbl">Who</span>
+      <div class="people" id="peoplePick"></div>
+    </div>
+    <div class="err" id="err"></div>
+    <div class="actions">
+      <button type="button" class="btn del" id="delBtn" hidden>Delete</button>
+      <button type="button" class="btn ghost" id="cancelBtn">Cancel</button>
+      <button type="submit" class="btn primary" id="saveBtn">Save</button>
+    </div>
+  </form>
+</div>
+
+
+<div class="gate" id="gate">
+  <div class="card">
+    <div class="who-dots" aria-hidden="true"><span style="--c:var(--luke)"></span><span style="--c:var(--ellie)"></span><span style="--c:var(--frey)"></span></div>
+    <h2>Family Week</h2>
+    <p id="gateMsg">Loading…</p>
+    <button class="btn primary" id="signInBtn" type="button" hidden>Sign in with Google</button>
+    <button class="btn ghost" id="gateSignOut" type="button" hidden>Use a different account</button>
+  </div>
+</div>
+
+<script type="module">
+
+const PEOPLE = [
+  {name:"Luke",  c:"--luke",  w:"--luke-wash"},
+  {name:"Ellie", c:"--ellie", w:"--ellie-wash"},
+  {name:"Frey",  c:"--frey",  w:"--frey-wash"}
+];
+const SLOTS = [["morning","Morning"],["afternoon","Afternoon"],["evening","Evening"]];
+const MAX_PER_SLOT = 3;
+const DOW = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+let events = new Map();      // id -> {date, slot, title, people}
+let weekStart = mondayOf(new Date());
+let filter = null;
+try { filter = localStorage.getItem("fw-filter") || null; } catch(e) {}
+let store = null, canWrite = true;
+let editing = null;          // {id?, date, slot}
+let pick = new Set();
+
+function pad(n){return String(n).padStart(2,"0")}
+function key(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function mondayOf(d){const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());const off=(x.getDay()+6)%7;x.setDate(x.getDate()-off);return x}
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+function personVar(name,which){const p=PEOPLE.find(p=>p.name===name);return p?`var(${p[which]})`:"var(--muted)"}
+
+function renderFilters(){
+  const f = document.getElementById("filters"); f.textContent="";
+  const mk=(label,val,p)=>{
+    const b=document.createElement("button"); b.className="chip"; b.type="button";
+    b.setAttribute("aria-pressed", String(filter===val));
+    if(p){b.style.setProperty("--c",`var(${p.c})`);b.style.setProperty("--w",`var(${p.w})`);const d=document.createElement("span");d.className="dot";b.append(d)}
+    b.append(label);
+    b.onclick=()=>{filter=val;try{val?localStorage.setItem("fw-filter",val):localStorage.removeItem("fw-filter")}catch(e){};renderFilters();render()};
+    f.append(b);
+  };
+  mk("Everyone",null);
+  PEOPLE.forEach(p=>mk(p.name,p.name,p));
+}
+
+function render(){
+  const end = addDays(weekStart,6);
+  const thisMon = mondayOf(new Date());
+  const diff = Math.round((weekStart-thisMon)/864e5/7);
+  const t = document.getElementById("weekTitle");
+  t.firstChild.nodeValue = diff===0?"This week":diff===1?"Next week":diff===-1?"Last week":"Week of "+weekStart.getDate()+" "+MONTHS[weekStart.getMonth()];
+  document.getElementById("weekRange").textContent =
+    `${weekStart.getDate()} ${MONTHS[weekStart.getMonth()]} – ${end.getDate()} ${MONTHS[end.getMonth()]} ${end.getFullYear()}`;
+
+  const todayKey = key(new Date());
+  const byKey = {};
+  for (const [id,e] of events){ (byKey[e.date+"|"+e.slot] ||= []).push({id,...e}); }
+  const host = document.getElementById("days"); host.textContent="";
+  let shown = 0;
+  for(let i=0;i<7;i++){
+    const d = addDays(weekStart,i), k = key(d);
+    const row = document.createElement("section"); row.className="day"+(k===todayKey?" today":"");
+    row.setAttribute("aria-label", d.toDateString());
+    const dt=document.createElement("div");dt.className="date";
+    dt.innerHTML=`<span class="dow">${DOW[i]}</span><span class="num">${d.getDate()}</span>`;
+    row.append(dt);
+    for(const [slot,label] of SLOTS){
+      const cell=document.createElement("div");cell.className="slot";
+      const all=(byKey[k+"|"+slot]||[]).sort((a,b)=>(a.created||0)-(b.created||0));
+      const list=filter?all.filter(e=>e.people.includes(filter)):all;
+      shown+=list.length;
+      for(const e of list){
+        const b=document.createElement("button");b.className="ev";b.type="button";
+        b.setAttribute("aria-label",`${e.title}, ${label}, ${e.people.join(", ")}. Edit`);
+        const tt=document.createElement("span");tt.textContent=e.title;b.append(tt);
+        const who=document.createElement("span");who.className="who";
+        for(const n of e.people){const s=document.createElement("span");s.style.setProperty("--c",personVar(n,"c"));s.textContent=n[0];s.title=n;who.append(s)}
+        b.append(who);
+        b.onclick=()=>openSheet({id:e.id,date:k,slot});
+        cell.append(b);
+      }
+      if(all.length<MAX_PER_SLOT && canWrite){
+        const a=document.createElement("button");a.className="add";a.type="button";a.textContent="+";
+        a.setAttribute("aria-label",`Add to ${DOW[i]} ${label}`);
+        a.onclick=()=>openSheet({date:k,slot,preset:filter});
+        cell.append(a);
+      }
+      row.append(cell);
+    }
+    host.append(row);
+  }
+  const hint=document.getElementById("hint");
+  hint.textContent = filter && shown===0 ? `Nothing for ${filter} this week.` : (events.size===0 && canWrite ? "Tap + in a slot to add something." : "");
+  hint.hidden = !hint.textContent;
+}
+
+/* ---- Sheet ---- */
+const scrim=document.getElementById("scrim"), form=document.getElementById("sheet");
+const titleIn=document.getElementById("evTitle"), errEl=document.getElementById("err"), delBtn=document.getElementById("delBtn");
+
+function renderPick(){
+  const h=document.getElementById("peoplePick");h.textContent="";
+  for(const p of PEOPLE){
+    const b=document.createElement("button");b.type="button";b.className="chip";
+    b.style.setProperty("--c",`var(${p.c})`);b.style.setProperty("--w",`var(${p.w})`);
+    b.setAttribute("aria-pressed",String(pick.has(p.name)));
+    const d=document.createElement("span");d.className="dot";b.append(d,p.name);
+    b.onclick=()=>{pick.has(p.name)?pick.delete(p.name):pick.add(p.name);errEl.textContent="";renderPick()};
+    h.append(b);
+  }
+}
+function openSheet(ctx){
+  editing=ctx; errEl.textContent="";
+  const e = ctx.id ? events.get(ctx.id) : null;
+  titleIn.value = e ? e.title : "";
+  pick = new Set(e ? e.people : (ctx.preset ? [ctx.preset] : []));
+  const [y,m,d]=ctx.date.split("-").map(Number); const dt=new Date(y,m-1,d);
+  document.getElementById("sheetTitle").firstChild.nodeValue = e ? "Edit event" : "Add event";
+  document.getElementById("sheetWhen").textContent = `${DOW[(dt.getDay()+6)%7]} ${d} ${MONTHS[m-1]} · ${SLOTS.find(s=>s[0]===ctx.slot)[1]}`;
+  delBtn.hidden = !e || !canWrite; delBtn.classList.remove("armed"); delBtn.textContent="Delete";
+  titleIn.disabled = !canWrite; document.getElementById("saveBtn").hidden = !canWrite;
+  renderPick();
+  scrim.hidden=false;
+  setTimeout(()=>titleIn.focus(),50);
+}
+function closeSheet(){scrim.hidden=true;editing=null}
+document.getElementById("cancelBtn").onclick=closeSheet;
+scrim.addEventListener("click",e=>{if(e.target===scrim)closeSheet()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!scrim.hidden)closeSheet()});
+
+form.addEventListener("submit",async ev=>{
+  ev.preventDefault();
+  const title=titleIn.value.trim();
+  if(!title){errEl.textContent="Give the event a name.";titleIn.focus();return}
+  if(pick.size===0){errEl.textContent="Pick at least one person.";return}
+  const {id,date,slot}=editing;
+  if(!id){
+    const count=[...events.values()].filter(e=>e.date===date&&e.slot===slot).length;
+    if(count>=MAX_PER_SLOT){errEl.textContent="This slot already has 3 events.";return}
+  }
+  const people=PEOPLE.map(p=>p.name).filter(n=>pick.has(n));
+  const body={date,slot,title,people,created:id?(events.get(id).created||Date.now()):Date.now()};
+  const save=document.getElementById("saveBtn");save.disabled=true;
+  try{
+    await store.save(id, body);
+    closeSheet();
+  }catch(e){ errEl.textContent = writeError(e); }
+  finally{save.disabled=false}
+});
+delBtn.onclick=async()=>{
+  if(!delBtn.classList.contains("armed")){delBtn.classList.add("armed");delBtn.textContent="Tap again to delete";return}
+  const {id}=editing;
+  try{ await store.remove(id); closeSheet(); }
+  catch(e){ errEl.textContent = writeError(e); }
+};
+function writeError(e){
+  if(e&&e.code==="permission-denied")return "This account isn't allowed to change the calendar.";
+  return "Couldn't save just now. Check your connection and try again.";
+}
+
+/* ---- Nav ---- */
+document.getElementById("prev").onclick=()=>{weekStart=addDays(weekStart,-7);render()};
+document.getElementById("next").onclick=()=>{weekStart=addDays(weekStart,7);render()};
+document.getElementById("todayBtn").onclick=()=>{weekStart=mondayOf(new Date());render()};
+
+renderFilters(); render();
+
+
+/* ---- Firebase ---- */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { initializeFirestore, persistentLocalCache, collection, doc, setDoc, deleteDoc, onSnapshot }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDsttc2lr2gdQWdTawb0aFgYBTeuOU6L_I",
+  authDomain: "family-week-b2b64.firebaseapp.com",
+  projectId: "family-week-b2b64",
+  storageBucket: "family-week-b2b64.firebasestorage.app",
+  messagingSenderId: "314458808303",
+  appId: "1:314458808303:web:06f2d464211275c269201a"
+};
+// Who may sign in. The real lock is in firestore.rules; keep both lists the same.
+const ALLOWED = ["lbailey211@gmail.com"];
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const fs = initializeFirestore(app, { localCache: persistentLocalCache() });
+const eventsCol = collection(fs, "events");
+let unsub = null;
+
+store = {
+  save: (id, body) => setDoc(id ? doc(eventsCol, id) : doc(eventsCol), body),
+  remove: (id) => deleteDoc(doc(eventsCol, id))
+};
+
+const gate = document.getElementById("gate"), gateMsg = document.getElementById("gateMsg");
+const signInBtn = document.getElementById("signInBtn"), gateSignOut = document.getElementById("gateSignOut");
+const banner = document.getElementById("banner");
+
+function showGate(msg, {signIn=false, signOutBtn=false}={}) {
+  gateMsg.textContent = msg; signInBtn.hidden = !signIn; gateSignOut.hidden = !signOutBtn; gate.hidden = false;
+}
+
+signInBtn.onclick = async () => {
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
+  try { await signInWithPopup(auth, provider); }
+  catch (e) {
+    if (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment") {
+      await signInWithRedirect(auth, provider);
+    } else if (e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request") {
+      showGate("Sign-in didn't work: " + (e.message || e.code), {signIn:true});
+    }
+  }
+};
+const doSignOut = () => signOut(auth);
+gateSignOut.onclick = doSignOut;
+document.getElementById("signOutBtn").onclick = doSignOut;
+
+onAuthStateChanged(auth, user => {
+  if (unsub) { unsub(); unsub = null; }
+  if (!user) { events = new Map(); render(); showGate("Sign in to see the family calendar.", {signIn:true}); return; }
+  if (!ALLOWED.includes((user.email || "").toLowerCase())) {
+    showGate(`${user.email} isn't on the family list.`, {signOutBtn:true}); return;
+  }
+  gate.hidden = true;
+  document.getElementById("signedAs").textContent = user.email + " ·";
+  unsub = onSnapshot(eventsCol, snap => {
+    const next = new Map();
+    snap.forEach(d => { const x = d.data(); if (x && x.date && x.slot && Array.isArray(x.people)) next.set(d.id, x); });
+    events = next; banner.hidden = true; render();
+  }, err => {
+    banner.textContent = err.code === "permission-denied"
+      ? "The database refused this account. Check the security rules include your email."
+      : "Lost connection to the calendar. Reload to reconnect.";
+    banner.hidden = false;
+  });
+});
+
+</script>
+</body>
+</html>
