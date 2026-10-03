@@ -144,7 +144,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--today);outline-
       <button class="navbtn" id="next" aria-label="Next week">›</button>
     </div>
     <div class="filters" id="filters" role="group" aria-label="Show events for"></div>
-    <div class="legend" id="legend" hidden><span><i class="hatch"></i>Booked</span><span><i></i>Not booked</span><span><i style="--c:var(--free)"></i>Independent</span><span><i style="--c:var(--busy)"></i>Not independent</span><span><i style="--c:var(--maybe)"></i>Nobody booked</span><span class="tally" id="tally"></span></div>
+    <div class="legend" id="legend" hidden><span><i class="hatch"></i>Booked</span><span><i></i>Not booked</span><span><i style="--c:var(--free)"></i>Me time</span><span><i style="--c:var(--busy)"></i>On duty</span><span><i style="--c:var(--maybe)"></i>Nobody booked</span><span class="tally" id="tally"></span></div>
     <div class="banner" id="banner" hidden></div>
     <div class="cols" aria-hidden="true"><span></span><span>Morning</span><span>Afternoon</span><span>Evening</span></div>
   </header>
@@ -164,7 +164,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--today);outline-
       <label for="evTime">Time (optional)</label>
       <input id="evTime" maxlength="20" placeholder="e.g. 10.30" inputmode="text">
     </div>
-    <label class="check" for="evIndep"><input type="checkbox" id="evIndep"> Independent <small>time for yourself, not work or family jobs</small></label>
+    <label class="check" for="evIndep"><input type="checkbox" id="evIndep"> Me time <small>Something for you, like football or seeing friends. Leave unticked for work, admin and jobs.</small></label>
     <div class="field">
       <span class="lbl">Who</span>
       <div class="people" id="peoplePick"></div>
@@ -232,7 +232,7 @@ function renderFilters(){
 // What a slot means for one parent: a fill and a border.
 // Fill:   booked (hatched) = they have an event, or the other parent is out without Frey (so they have Frey)
 //         clear            = they're not tied up
-// Border: indep (green) = everything they're booked on is Independent, or they're simply free
+// Border: indep (green) = everything they're booked on is Me time, or they're simply free (Frey covered)
 //         duty  (red)   = work/jobs, or covering Frey
 //         maybe (yellow)= nobody is booked at all
 const PARENTS = {Luke:"Ellie", Ellie:"Luke"};
@@ -277,16 +277,16 @@ function render(){
       shown+=mine.length;
       if(PARENTS[filter]){
         const st=availability(filter,all); cell.classList.add(st.tone); if(st.booked) cell.classList.add("booked");
-        cell.setAttribute("aria-label",`${label}: ${filter} ${st.tone==="maybe"?"nobody booked":(st.booked?"booked":"not booked")+", "+(st.tone==="indep"?"independent":"not independent")}`);
+        cell.setAttribute("aria-label",`${label}: ${filter} ${st.tone==="maybe"?"nobody booked":(st.booked?"booked":"not booked")+", "+(st.tone==="indep"?"me time":"on duty")}`);
       }
       for(const n in indepSlots) if(all.some(e=>isIndep(e)&&e.people.includes(n))) indepSlots[n]++;
       for(const e of all){
         const b=document.createElement("button");b.className="ev"+(filter&&!e.people.includes(filter)?" dim":"");b.type="button";
-        b.setAttribute("aria-label",`${e.time?e.time+" ":""}${e.title}${isIndep(e)?" (independent)":""}, ${label}, ${e.people.join(", ")}. Edit`);
+        b.setAttribute("aria-label",`${e.time?e.time+" ":""}${e.title}${isIndep(e)?" (me time)":""}, ${label}, ${e.people.join(", ")}. Edit`);
         if(e.time||isIndep(e)){
           const meta=document.createElement("span");meta.className="meta";
           if(e.time){const tm=document.createElement("span");tm.className="time";tm.textContent=e.time;meta.append(tm)}
-          if(isIndep(e)){const tg=document.createElement("span");tg.className="tag";tg.textContent="Independent";if(!e.time)tg.style.marginLeft="0";meta.append(tg)}
+          if(isIndep(e)){const tg=document.createElement("span");tg.className="tag";tg.textContent="Me time";if(!e.time)tg.style.marginLeft="0";meta.append(tg)}
           b.append(meta);
         }
         const tt=document.createElement("span");tt.textContent=e.title;b.append(tt);
@@ -307,7 +307,7 @@ function render(){
     host.append(row);
   }
   document.getElementById("tally").textContent =
-    `Independent slots this week: Luke ${indepSlots.Luke} · Ellie ${indepSlots.Ellie}`;
+    `Me time this week: Luke ${indepSlots.Luke} slot${indepSlots.Luke===1?"":"s"} · Ellie ${indepSlots.Ellie} slot${indepSlots.Ellie===1?"":"s"}`;
   const hint=document.getElementById("hint");
   hint.textContent = filter && shown===0 ? `Nothing for ${filter} this week.` : (events.size===0 && canWrite ? "Tap + in a slot to add something." : "");
   hint.hidden = !hint.textContent;
