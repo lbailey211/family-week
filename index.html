@@ -80,9 +80,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--today);outline-
 .slot{min-width:0;display:flex;flex-direction:column;gap:4px;background:var(--soft);border-radius:8px;padding:4px;min-height:58px;border:2px solid transparent}
 .slot.duty{border-color:var(--busy)}.slot.maybe{border-color:var(--maybe)}.slot.indep{border-color:var(--free)}
 .slot.booked,.legend i.hatch{background:repeating-linear-gradient(135deg,var(--soft) 0 5px,var(--hatch) 5px 8px)}
-.ev .tag{display:inline-block;font-size:.68rem;font-weight:700;color:var(--free);margin-left:4px}
 .ev .meta{display:block;font-size:.74rem;line-height:1.2}
-.tally{flex-basis:100%;font-variant-numeric:tabular-nums}
 .ev.dim{opacity:.4}
 .ev .time{font-weight:700;font-size:.74rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.78rem;color:var(--muted)}
@@ -144,7 +142,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--today);outline-
       <button class="navbtn" id="next" aria-label="Next week">›</button>
     </div>
     <div class="filters" id="filters" role="group" aria-label="Show events for"></div>
-    <div class="legend" id="legend" hidden><span><i class="hatch"></i>Booked</span><span><i></i>Not booked</span><span><i style="--c:var(--free)"></i>Me time</span><span><i style="--c:var(--busy)"></i>On duty</span><span><i style="--c:var(--maybe)"></i>Nobody booked</span><span class="tally" id="tally"></span></div>
+    <div class="legend" id="legend" hidden><span><i class="hatch"></i>Booked</span><span><i></i>Not booked</span><span><i style="--c:var(--free)"></i>Me time</span><span><i style="--c:var(--busy)"></i>On duty</span><span><i style="--c:var(--maybe)"></i>Nobody booked</span></div>
     <div class="banner" id="banner" hidden></div>
     <div class="cols" aria-hidden="true"><span></span><span>Morning</span><span>Afternoon</span><span>Evening</span></div>
   </header>
@@ -254,7 +252,6 @@ function render(){
   const t = document.getElementById("weekTitle");
   t.firstChild.nodeValue = diff===0?"This week":diff===1?"Next week":diff===-1?"Last week":"Week of "+weekStart.getDate()+" "+MONTHS[weekStart.getMonth()];
   document.getElementById("legend").hidden = !PARENTS[filter];
-  const indepSlots = {Luke:0, Ellie:0};
   document.getElementById("weekRange").textContent =
     `${weekStart.getDate()} ${MONTHS[weekStart.getMonth()]} – ${end.getDate()} ${MONTHS[end.getMonth()]} ${end.getFullYear()}`;
 
@@ -279,16 +276,10 @@ function render(){
         const st=availability(filter,all); cell.classList.add(st.tone); if(st.booked) cell.classList.add("booked");
         cell.setAttribute("aria-label",`${label}: ${filter} ${st.tone==="maybe"?"nobody booked":(st.booked?"booked":"not booked")+", "+(st.tone==="indep"?"me time":"on duty")}`);
       }
-      for(const n in indepSlots) if(all.some(e=>isIndep(e)&&e.people.includes(n))) indepSlots[n]++;
       for(const e of all){
         const b=document.createElement("button");b.className="ev"+(filter&&!e.people.includes(filter)?" dim":"");b.type="button";
         b.setAttribute("aria-label",`${e.time?e.time+" ":""}${e.title}${isIndep(e)?" (me time)":""}, ${label}, ${e.people.join(", ")}. Edit`);
-        if(e.time||isIndep(e)){
-          const meta=document.createElement("span");meta.className="meta";
-          if(e.time){const tm=document.createElement("span");tm.className="time";tm.textContent=e.time;meta.append(tm)}
-          if(isIndep(e)){const tg=document.createElement("span");tg.className="tag";tg.textContent="Me time";if(!e.time)tg.style.marginLeft="0";meta.append(tg)}
-          b.append(meta);
-        }
+        if(e.time){const meta=document.createElement("span");meta.className="meta";const tm=document.createElement("span");tm.className="time";tm.textContent=e.time;meta.append(tm);b.append(meta)}
         const tt=document.createElement("span");tt.textContent=e.title;b.append(tt);
         const who=document.createElement("span");who.className="who";
         for(const n of e.people){const s=document.createElement("span");s.style.setProperty("--c",personVar(n,"c"));s.textContent=n[0];s.title=n;who.append(s)}
@@ -306,8 +297,6 @@ function render(){
     }
     host.append(row);
   }
-  document.getElementById("tally").textContent =
-    `Me time this week: Luke ${indepSlots.Luke} slot${indepSlots.Luke===1?"":"s"} · Ellie ${indepSlots.Ellie} slot${indepSlots.Ellie===1?"":"s"}`;
   const hint=document.getElementById("hint");
   hint.textContent = filter && shown===0 ? `Nothing for ${filter} this week.` : (events.size===0 && canWrite ? "Tap + in a slot to add something." : "");
   hint.hidden = !hint.textContent;
